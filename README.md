@@ -1,9 +1,9 @@
-# Trinomial Tree Option Pricer — VBA & Python
+# Trinomial Tree Option Pricer - VBA & Python
 
 ## Overview
 
 The **Trinomial Tree Option Pricer** is a dual-language project.
-It implements a recombining trinomial lattice for pricing European and American options, with discrete dividends, Greeks computation, and validation against the Black–Scholes analytical model**.
+It implements a recombining trinomial lattice for pricing European and American options, with discrete dividends, Greeks computation, and validation against the Black–Scholes analytical model.
 
 The repository contains both:
 
