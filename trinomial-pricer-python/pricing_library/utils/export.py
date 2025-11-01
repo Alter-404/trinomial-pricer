@@ -4,7 +4,7 @@ import pandas as pd
 
 This module provides convenience wrappers used by the web UI and
 export utilities. The functions are intentionally thin wrappers around
-``pandas`` to keep call sites succinct.
+pandas to keep call sites succinct.
 
 Authors
 -------

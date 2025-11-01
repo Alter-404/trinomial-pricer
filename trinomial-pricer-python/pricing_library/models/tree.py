@@ -8,16 +8,16 @@ from pricing_library.core.node import Node, TruncNode
 
 """Trinomial tree building and pricing utilities.
 
-This module implements the high-level ``Tree`` class which constructs a
+This module implements the high-level Tree class which constructs a
 recombining trinomial lattice and provides multiple pricing routines:
 
-- ``make_tree`` / ``build_column`` / ``build_triplet``: build the lattice
-- ``recursive_pricing``: pricing using recursion from root (may overflow)
-- ``backward_pricing``: iterative backward induction from terminal nodes
-- ``gap``: diagnostic helper returning theoretical gap estimates
+- make_tree / build_column / build_triplet: build the lattice
+- recursive_pricing: pricing using recursion from root (may overflow)
+- backward_pricing: iterative backward induction from terminal nodes
+- gap: diagnostic helper returning theoretical gap estimates
 
 The implementation intentionally keeps algorithmic details in the node
-classes; ``Tree`` orchestrates the grid construction and top-level
+classes; Tree orchestrates the grid construction and top-level
 operations.
 
 Authors
@@ -30,7 +30,7 @@ Noah Chikhi
 class Tree:
     """High-level trinomial tree manager.
 
-    The ``Tree`` class is responsible for building a recombining trinomial
+    The Tree class is responsible for building a recombining trinomial
     lattice from the provided market and option data and for exposing
     pricing routines that operate on the lattice.
 
@@ -53,8 +53,8 @@ class Tree:
     alpha : float
         Multiplicative up/down factor, exp(sigma * sqrt(3 * delta_t)).
     root : Optional[TruncNode]
-        Root (trunk) node of the constructed lattice. ``None`` until
-        ``make_tree`` is called.
+        Root (trunk) node of the constructed lattice. None until
+        make_tree is called.
     last : Optional[TruncNode]
         Reference to the terminal trunk node assigned after building the
         full tree (used by backward_pricing).
@@ -74,7 +74,7 @@ class Tree:
         """Create the three forward connections (up, mid, down) for a node.
 
         The method computes the middle successor using the node helper
-        ``calc_next_mid`` and, subject to pruning thresholds, creates the
+        calc_next_mid and, subject to pruning thresholds, creates the
         up/down neighbors. It then calculates transition probabilities for
         the current node and ensures the next-level nodes have their
         probabilities computed.
@@ -90,7 +90,7 @@ class Tree:
         Returns
         -------
         Node or TruncNode
-            The same ``current_node`` instance (convenience for chaining).
+            The same current_node instance (convenience for chaining).
         """
         current_node.next_mid = current_node.calc_next_mid(nCandidate)
         if not self.pricer_parameters.pruning or current_node.p_node > self.pricer_parameters.p_min:
@@ -106,7 +106,7 @@ class Tree:
         Starting from the supplied trunk node (middle node of the current
         column), this method constructs its triplet and then iteratively
         extends upward and downward branches, reusing nodes whenever the
-        recombination rules allow it. Pruning settings in ``pricer_parameters``
+        recombination rules allow it. Pruning settings in pricer_parameters
         control whether low-probability branches are expanded.
 
         Parameters
@@ -148,12 +148,12 @@ class Tree:
         """Construct the full recombining trinomial tree.
 
         The method creates the root trunk node and iteratively builds each
-        subsequent column using :py:meth:`build_column`.
+        subsequent column using :py:meth:build_column.
 
         Raises
         ------
         ValueError
-            If pruning is enabled but no pruning threshold ``p_min`` is
+            If pruning is enabled but no pruning threshold p_min is
             provided in the pricer parameters.
         """
         if self.pricer_parameters.pruning and self.pricer_parameters.p_min is None:
@@ -169,9 +169,9 @@ class Tree:
         """Price the option using recursive evaluation from the root.
 
         This method first constructs the tree and then delegates pricing to
-        node-level recursion (``Node.price``). For large trees Python's
-        recursion limit may be exceeded; callers can catch ``RecursionError``
-        and fall back to :py:meth:`backward_pricing`.
+        node-level recursion (Node.price). For large trees Python's
+        recursion limit may be exceeded; callers can catch RecursionError
+        and fall back to :py:meth:backward_pricing.
 
         Returns
         -------
@@ -217,7 +217,7 @@ class Tree:
 
         The function computes a theoretical standard deviation and the
         theoretical gap estimate used in convergence analysis. When
-        ``given_gap`` is provided, the method attempts to invert the
+        given_gap is provided, the method attempts to invert the
         theoretical formula to estimate the number of time steps required
         to achieve that gap.
 
@@ -230,8 +230,8 @@ class Tree:
         Returns
         -------
         tuple
-            A tuple ``(standard_deviation, gap, calculated_nb_steps)`` where
-            ``calculated_nb_steps`` is ``None`` when ``given_gap`` is not set.
+            A tuple (standard_deviation, gap, calculated_nb_steps) where
+            calculated_nb_steps is None when given_gap is not set.
         """
         T: float = self.delta_t * self.pricer_parameters.nb_steps
         standard_deviation: float = self.market_data.s0 * np.exp(self.market_data.rate * T) * np.sqrt(np.exp(self.market_data.vol ** 2 * T) - 1)

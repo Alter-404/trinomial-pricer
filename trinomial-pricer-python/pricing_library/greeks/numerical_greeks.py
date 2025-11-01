@@ -43,32 +43,13 @@ def _price(market: Market, option: Option, pricing_date, n_steps: int, method: s
     Pruning is enabled by default for numerical Greeks to reduce numerical
     noise coming from low-probability branches.
     """
-    params = PricerParameters(pricing_date, n_steps, pruning=True, p_min=1e-7)
+    params = PricerParameters(pricing_date, n_steps, pruning=True, p_min=1e-9)
     tree = Tree(params, market, option)
     return tree.backward_pricing() if method == "backward" else tree.recursive_pricing()
 
 
 def delta(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
-    """Central finite-difference estimate of delta (∂V/∂S).
-
-    Parameters
-    ----------
-    mkt : Market
-        Base market object.
-    n_steps : int
-        Number of tree steps.
-    pricing_date : datetime.datetime
-        Valuation date.
-    opt : Option
-        Option to price.
-    h : float, optional
-        Relative bump applied to S0 (default 1%).
-
-    Returns
-    -------
-    float
-        Delta estimate.
-    """
+    """Central finite-difference estimate of delta (∂V/∂S)."""
     S0 = mkt.s0
     up = Market(S0 * (1 + h), mkt.rate, mkt.vol, mkt.dividend, mkt.ex_div_date)
     down = Market(S0 * (1 - h), mkt.rate, mkt.vol, mkt.dividend, mkt.ex_div_date)
@@ -78,7 +59,7 @@ def delta(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01)
 
 
 def gamma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
-    """Central finite-difference estimate of gamma (∂²V/∂S²)."""
+    """Central finite-difference estimate of gamma."""
     S0 = mkt.s0
     up = Market(S0 * (1 + h), mkt.rate, mkt.vol, mkt.dividend, mkt.ex_div_date)
     down = Market(S0 * (1 - h), mkt.rate, mkt.vol, mkt.dividend, mkt.ex_div_date)
@@ -99,10 +80,7 @@ def vega(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) 
 
 
 def theta(mkt: Market, n_steps: int, pricing_date, opt: Option, days: int = 1) -> float:
-    """Estimate theta as the discrete change in price over a number of days.
-
-    Returns theta expressed per day.
-    """
+    """Estimate theta as the discrete change in price over a number of days."""
     pd = pricing_date
     up_date = pd + __import__('datetime').timedelta(days=days)
     p0 = _price(mkt, opt, pd, n_steps)
@@ -121,10 +99,7 @@ def rho(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 1e-4) -
 
 
 def vanna(mkt: Market, n_steps: int, pricing_date, opt: Option, h_s: float = 0.01, h_sigma: float = 0.01) -> float:
-    """Cross derivative ∂²V/∂S∂σ using central differences.
-
-    The function uses a 2D central-difference stencil over spot and volatility.
-    """
+    """Cross derivative using central differences."""
     S0 = mkt.s0
     sigma = mkt.vol
     p_pp = _price(Market(S0 * (1 + h_s), mkt.rate, sigma * (1 + h_sigma), mkt.dividend, mkt.ex_div_date), opt, pricing_date, n_steps)
@@ -135,7 +110,7 @@ def vanna(mkt: Market, n_steps: int, pricing_date, opt: Option, h_s: float = 0.0
 
 
 def vomma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
-    """Second derivative of price with respect to volatility (∂²V/∂σ²)."""
+    """Second derivative of price with respect to volatility."""
     sigma = mkt.vol
     p_up = _price(Market(mkt.s0, mkt.rate, sigma * (1 + h), mkt.dividend, mkt.ex_div_date), opt, pricing_date, n_steps)
     p_down = _price(Market(mkt.s0, mkt.rate, sigma * (1 - h), mkt.dividend, mkt.ex_div_date), opt, pricing_date, n_steps)
@@ -144,10 +119,7 @@ def vomma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01)
 
 
 def charm(*args, **kwargs):
-    """Estimate charm (∂Δ/∂t) numerically using a finite shift in time.
-
-    Signature: charm(mkt, n_steps, pricing_date, opt, days=1, h=0.01)
-    """
+    """Estimate charm numerically using a finite shift in time."""
     try:
         mkt = args[0]
         n_steps = args[1]
@@ -165,10 +137,7 @@ def charm(*args, **kwargs):
 
 
 def speed(*args, **kwargs):
-    """Numerical third derivative of price with respect to spot (∂³V/∂S³).
-
-    Signature: speed(mkt, n_steps, pricing_date, opt, h=0.01)
-    """
+    """Numerical third derivative of price with respect to spot."""
     try:
         mkt = args[0]
         n_steps = args[1]
@@ -187,7 +156,7 @@ def speed(*args, **kwargs):
 
 
 def zomma(*args, **kwargs):
-    """Derivative of gamma with respect to volatility (∂Γ/∂σ)."""
+    """Derivative of gamma with respect to volatility."""
     try:
         mkt = args[0]
         n_steps = args[1]
@@ -206,20 +175,14 @@ def zomma(*args, **kwargs):
 
 
 def lambda_elasticity(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
-    """Elasticity (lambda) = (S0 * Delta) / V.
-
-    Returns 0 if the option value is zero to avoid division by zero.
-    """
+    """Elasticity (lambda) = (S0 * Delta) / V."""
     V = _price(mkt, opt, pricing_date, n_steps)
     d = delta(mkt, n_steps, pricing_date, opt, h)
     return (d * mkt.s0) / V if V != 0 else 0.0
 
 
 def dividend_rho(*args, **kwargs):
-    """Sensitivity of price to the discrete dividend amount (central diff).
-
-    Signature: dividend_rho(mkt, n_steps, pricing_date, opt, h=1e-2)
-    """
+    """Sensitivity of price to the discrete dividend amount (central diff)."""
     try:
         mkt = args[0]
         n_steps = args[1]

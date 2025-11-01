@@ -4,7 +4,7 @@ Launch script for the Streamlit application.
 Usage (PowerShell):
     python main.py
 
-This will run `streamlit run app/app.py` using the current Python interpreter.
+This will run streamlit run app/app.py using the current Python interpreter.
 If you prefer to run Streamlit directly, use:
     streamlit run app/app.py
 

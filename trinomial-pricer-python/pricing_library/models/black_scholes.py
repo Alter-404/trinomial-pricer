@@ -30,7 +30,7 @@ def _d1_d2(S0: float, K: float, T: float, r: float, sigma: float) -> Tuple[float
 def black_scholes_call_price(S0: float, K: float, T: float, r: float, sigma: float) -> float:
     """Black-Scholes price for a European call.
 
-    Returns the intrinsic value when ``T <= 0``.
+    Returns the intrinsic value when T <= 0.
     """
     if T <= 0:
         return max(S0 - K, 0.0)
@@ -41,7 +41,7 @@ def black_scholes_call_price(S0: float, K: float, T: float, r: float, sigma: flo
 def black_scholes_put_price(S0: float, K: float, T: float, r: float, sigma: float) -> float:
     """Black-Scholes price for a European put.
 
-    Returns the intrinsic value when ``T <= 0``.
+    Returns the intrinsic value when T <= 0.
     """
     if T <= 0:
         return max(K - S0, 0.0)
@@ -81,8 +81,7 @@ def vega(S0: float, K: float, T: float, r: float, sigma: float) -> float:
 def theta(S0: float, K: float, T: float, r: float, sigma: float, option_type: str = 'call') -> float:
     """Approximate Black-Scholes theta per day.
 
-    The standard formula returns annual theta; this function divides by 365 to
-    express theta per day.
+    Returns theta per day.
     """
     if T <= 0:
         return 0.0

@@ -3,7 +3,7 @@ from typing import Literal
 
 """Option contract specification.
 
-This module exposes a small :class:`Option` container used by pricing
+This module exposes a small :class:Option container used by pricing
 algorithms. The class stores strike, maturity and flags indicating whether the
 instrument is a call or put and whether it is European or American.
 
@@ -31,7 +31,7 @@ class Option:
     Notes
     -----
     The class is a lightweight container: validation is minimal and focused on
-    catching incorrect enum values for the ``call_put`` and ``eur_am``
+    catching incorrect enum values for the call_put and eur_am
     parameters.
     """
 
@@ -54,5 +54,5 @@ class Option:
         return max(und_price - self.K, 0) if self.call_put == "call" else max(self.K - und_price, 0)
 
     def is_american(self) -> bool:
-        """Return ``True`` when the option is American (allows early exercise)."""
+        """Return True when the option is American (allows early exercise)."""
         return self.eur_am == "american"

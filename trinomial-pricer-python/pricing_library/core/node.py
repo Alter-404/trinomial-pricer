@@ -5,7 +5,7 @@ import numpy as np
 
 """Node definitions for the trinomial tree.
 
-This module provides the :class:`Node` and :class:`TruncNode` classes used by
+This module provides the :class:Node and :class:TruncNode classes used by
 the trinomial tree implementation. Each node stores the underlying price,
 transition probabilities, links to neighbouring nodes and the computed option
 value once pricing has been performed.
@@ -13,7 +13,7 @@ value once pricing has been performed.
 Notes
 -----
 The implementation follows the conventions used across the project: time
-steps are expressed in years (``delta_t`` stored on the tree) and dividend
+steps are expressed in years (delta_t stored on the tree) and dividend
 period detection uses fractional-day arithmetic to avoid off-by-one issues.
 
 Authors
@@ -39,13 +39,13 @@ class Node:
     Attributes
     ----------
     und_price : float
-        Same as the ``und_price`` parameter.
+        Same as the und_price parameter.
     tree : Tree
         Parent tree reference.
     date : datetime.datetime
         Node date/time.
     opt_price : float or None
-        Cached option price (``None`` until evaluated).
+        Cached option price (None until evaluated).
     p_up, p_mid, p_down : float
         Transition probabilities to the three successor nodes.
     p_node : float
@@ -55,7 +55,7 @@ class Node:
     up_node, down_node : Node or None
         Local links used when searching / recombining nodes.
     is_exerced : bool
-        Flag set to ``True`` when early exercise was optimal for American
+        Flag set to True when early exercise was optimal for American
         options.
 
     Notes
@@ -107,8 +107,8 @@ class Node:
 
         The method picks the numerically-stable formula depending on whether a
         dividend falls in the forward step. When pruning is enabled and the
-        probability to reach this node is below ``p_min``, the method converts
-        the node to a monomial branch (``p_mid=1``) and returns.
+        probability to reach this node is below p_min, the method converts
+        the node to a monomial branch (p_mid=1) and returns.
         """
         if self.tree.pricer_parameters.pruning and self.p_node < self.tree.pricer_parameters.p_min:
             self.p_up, self.p_mid, self.p_down = 0.0, 1.0, 0.0
@@ -173,7 +173,7 @@ class Node:
         """Create or locate the middle node for the next time column.
 
         When a dividend falls inside the forward step the method will refine the
-        chosen middle node by calling :meth:`find_next_mid`.
+        chosen middle node by calling :meth:find_next_mid.
         """
         if self.next_mid is None or self.dividend_period():
             next_value = self.forward_variance()[0]
@@ -205,7 +205,7 @@ class Node:
         return self.down_node
 
     def dividend_period(self) -> bool:
-        """Return ``True`` when the ex-dividend date falls in this forward step."""
+        """Return True when the ex-dividend date falls in this forward step."""
         ex_date = self.tree.market_data.ex_div_date
         next_date = self.date + dt.timedelta(days=self.tree.delta_t * 365)
         one_day = dt.timedelta(days=1)

@@ -26,7 +26,7 @@ def plot_convergence(steps: List[int], prices: List[float], bs_price: float | No
         Corresponding option prices obtained for each step count.
     bs_price : float or None, optional
         Reference Black–Scholes price to plot as a horizontal line for
-        comparison. If ``None`` the reference line is omitted.
+        comparison. If None the reference line is omitted.
 
     Returns
     -------

@@ -2,7 +2,7 @@ import datetime as dt
 
 """Market data container.
 
-This module exposes the :class:`Market` thin data container used across the
+This module exposes the :class:Market thin data container used across the
 pricing library. It stores a small set of market inputs (spot, interest rate,
 volatility) and a simple discrete-dividend model (fixed amount + ex-dividend
 date). The class performs lightweight validation and normalisation.
@@ -33,38 +33,30 @@ class Market:
         Annual volatility (sigma). Must be non-negative.
     dividend_amount : float, optional
         Fixed discrete dividend amount paid on the ex-dividend date (default
-        ``0.0`` meaning no dividend).
+        0.0 meaning no dividend).
     ex_div_date : datetime.datetime, optional
-        Ex-dividend date for the discrete dividend. If ``dividend_amount`` is
-        non-zero and ``ex_div_date`` is omitted, the implementation sets a
+        Ex-dividend date for the discrete dividend. If dividend_amount is
+        non-zero and ex_div_date is omitted, the implementation sets a
         sentinel far-future date to indicate the dividend is out of scope.
 
     Attributes
     ----------
     s0 : float
-        Same as the ``s0`` argument.
+        Same as the s0 argument.
     rate : float
-        Same as the ``rate`` argument.
+        Same as the rate argument.
     vol : float
-        Same as the ``vol`` argument.
+        Same as the vol argument.
     dividend : float
         Normalised dividend amount (float).
     ex_div_date : datetime.datetime
         Normalised ex-dividend date; if no dividend is in practice present,
-        this will be a sentinel far in the future (``2099-12-31``).
+        this will be a sentinel far in the future (2099-12-31).
 
     Raises
     ------
     ValueError
-        If ``s0`` or ``vol`` are negative.
-
-    Examples
-    --------
-    >>> import datetime as dt
-    >>> Market(100.0, 0.01, 0.2)
-    Market(...)
-    >>> Market(100.0, 0.01, 0.2, dividend_amount=2.0, ex_div_date=dt.datetime(2025,5,1))
-    Market(...)
+        If s0 or vol are negative.
     """
 
     def __init__(self, s0: float, rate: float, vol: float, dividend_amount: float = 0.0, ex_div_date: dt.datetime = None) -> None:
