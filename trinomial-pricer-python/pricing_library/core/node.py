@@ -127,13 +127,16 @@ class Node:
         CLOSE_EPS = 1e-12
         PROB_TOL = 1e-10
 
+        # Compute probabilities using the appropriate branch
         try:
+            # Dividend period or expected value close to middle node price
             if (not self.dividend_period()) or (abs(expected_value - sm) < CLOSE_EPS):
                 var_factor = np.exp(sigma ** 2 * dt) - 1.0
                 denom = (1.0 - alpha) * (alpha ** -2 - 1.0)
                 p_down = var_factor / denom
                 p_up = p_down / alpha
                 p_mid = 1.0 - p_up - p_down
+            # Non-dividend period with expected value away from middle node price
             else:
                 variance_term = (variance + (expected_value + sm) * (expected_value - sm)) / (sm ** 2)
                 expected_term = (expected_value - sm) / sm
@@ -154,7 +157,7 @@ class Node:
             raise AssertionError(
                 f"Probabilities sum to {p_sum:.12f} (expected 1.0) at {self.date}: raw=[{p_up:.6g}, {p_mid:.6g}, {p_down:.6g}]"
             )
-
+        
         for name, p in (('p_up', p_up), ('p_mid', p_mid), ('p_down', p_down)):
             if p < -PROB_TOL or p > 1.0 + PROB_TOL:
                 raise AssertionError(f"Probability {name}={p:.12f} out of bounds [0,1] at {self.date}")

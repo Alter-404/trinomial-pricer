@@ -1,22 +1,20 @@
 import datetime as dt
 import math
-
 import pytest
-
 from pricing_library.core.market import Market
 from pricing_library.core.option import Option
 from pricing_library.core.pricing_parameters import PricerParameters
 from pricing_library.models.tree import Tree
 
-
 def test_market_validation():
+    # Test that Market raises ValueError for invalid inputs
     with pytest.raises(ValueError):
         Market(-1.0, 0.01, 0.2)
     with pytest.raises(ValueError):
         Market(100.0, 0.01, -0.1)
 
-
 def test_option_payoff_and_american_flag():
+    # Test Option payoff calculations and American flag
     today = dt.datetime(2025, 1, 1)
     maturity = dt.datetime(2025, 6, 1)
     c = Option(100.0, maturity, "call", "european")
@@ -27,14 +25,13 @@ def test_option_payoff_and_american_flag():
     assert p.is_american()
     assert not c.is_american()
 
-
 def test_pricer_parameters_dataclass():
+    # Test PricerParameters dataclass initialization
     today = dt.datetime(2025, 1, 1)
     params = PricerParameters(today, 10, pruning=True, p_min=1e-6)
     assert params.nb_steps == 10
     assert params.pruning
     assert params.p_min == 1e-6
-
 
 def test_tree_basic_pricing_smoke(pricing_params, default_market, european_call_option):
     # small smoke test: build a tiny tree and ensure pricing returns a float and is non-negative

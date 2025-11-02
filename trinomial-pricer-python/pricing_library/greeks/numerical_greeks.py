@@ -47,7 +47,6 @@ def _price(market: Market, option: Option, pricing_date, n_steps: int, method: s
     tree = Tree(params, market, option)
     return tree.backward_pricing() if method == "backward" else tree.recursive_pricing()
 
-
 def delta(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
     """Central finite-difference estimate of delta (∂V/∂S)."""
     S0 = mkt.s0
@@ -56,7 +55,6 @@ def delta(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01)
     p_up = _price(up, opt, pricing_date, n_steps)
     p_down = _price(down, opt, pricing_date, n_steps)
     return (p_up - p_down) / (S0 * 2 * h)
-
 
 def gamma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
     """Central finite-difference estimate of gamma."""
@@ -68,7 +66,6 @@ def gamma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01)
     p_down = _price(down, opt, pricing_date, n_steps)
     return (p_up - 2 * p_mid + p_down) / ((S0 * h) ** 2)
 
-
 def vega(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
     """Central finite-difference estimate of vega (∂V/∂σ)."""
     sigma = mkt.vol
@@ -78,7 +75,6 @@ def vega(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) 
     p_down = _price(down, opt, pricing_date, n_steps)
     return (p_up - p_down) / (2 * sigma * h)
 
-
 def theta(mkt: Market, n_steps: int, pricing_date, opt: Option, days: int = 1) -> float:
     """Estimate theta as the discrete change in price over a number of days."""
     pd = pricing_date
@@ -87,16 +83,14 @@ def theta(mkt: Market, n_steps: int, pricing_date, opt: Option, days: int = 1) -
     p1 = _price(mkt, opt, up_date, n_steps)
     return (p1 - p0) / days
 
-
 def rho(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 1e-4) -> float:
-    """Estimate rho (∂V/∂r) by central difference on the risk-free rate."""
+    """Estimate rho by central difference on the risk-free rate."""
     r = mkt.rate
     up = Market(mkt.s0, r + h, mkt.vol, mkt.dividend, mkt.ex_div_date)
     down = Market(mkt.s0, r - h, mkt.vol, mkt.dividend, mkt.ex_div_date)
     p_up = _price(up, opt, pricing_date, n_steps)
     p_down = _price(down, opt, pricing_date, n_steps)
     return (p_up - p_down) / (2 * h)
-
 
 def vanna(mkt: Market, n_steps: int, pricing_date, opt: Option, h_s: float = 0.01, h_sigma: float = 0.01) -> float:
     """Cross derivative using central differences."""
@@ -108,7 +102,6 @@ def vanna(mkt: Market, n_steps: int, pricing_date, opt: Option, h_s: float = 0.0
     p_mm = _price(Market(S0 * (1 - h_s), mkt.rate, sigma * (1 - h_sigma), mkt.dividend, mkt.ex_div_date), opt, pricing_date, n_steps)
     return (p_pp - p_pm - p_mp + p_mm) / (4 * S0 * h_s * sigma * h_sigma)
 
-
 def vomma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
     """Second derivative of price with respect to volatility."""
     sigma = mkt.vol
@@ -117,8 +110,7 @@ def vomma(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01)
     p0 = _price(mkt, opt, pricing_date, n_steps)
     return (p_up - 2 * p0 + p_down) / ((sigma * h) ** 2)
 
-
-def charm(*args, **kwargs):
+def charm(*args: float, **kwargs: float) -> float:
     """Estimate charm numerically using a finite shift in time."""
     try:
         mkt = args[0]
@@ -135,8 +127,7 @@ def charm(*args, **kwargs):
     delta_later = delta(mkt, n_steps, pricing_date + timedelta(days=days), opt, h=h)
     return (delta_later - delta_now) / float(days)
 
-
-def speed(*args, **kwargs):
+def speed(*args: float, **kwargs: float) -> float:
     """Numerical third derivative of price with respect to spot."""
     try:
         mkt = args[0]
@@ -154,8 +145,7 @@ def speed(*args, **kwargs):
     g_down = gamma(down, n_steps, pricing_date, opt, h=h)
     return (g_up - g_down) / (2 * eps)
 
-
-def zomma(*args, **kwargs):
+def zomma(*args: float, **kwargs: float) -> float:
     """Derivative of gamma with respect to volatility."""
     try:
         mkt = args[0]
@@ -173,15 +163,13 @@ def zomma(*args, **kwargs):
     g_down = gamma(down, n_steps, pricing_date, opt, h=h)
     return (g_up - g_down) / (2 * eps)
 
-
 def lambda_elasticity(mkt: Market, n_steps: int, pricing_date, opt: Option, h: float = 0.01) -> float:
     """Elasticity (lambda) = (S0 * Delta) / V."""
     V = _price(mkt, opt, pricing_date, n_steps)
     d = delta(mkt, n_steps, pricing_date, opt, h)
     return (d * mkt.s0) / V if V != 0 else 0.0
 
-
-def dividend_rho(*args, **kwargs):
+def dividend_rho(*args: float, **kwargs: float) -> float:
     """Sensitivity of price to the discrete dividend amount (central diff)."""
     try:
         mkt = args[0]
